@@ -3,11 +3,15 @@
 #include <cmath>
 #include <random>
 #include <string>
+#include <thread>
+#include <mutex>
 
 class BackgroundWater : public PriDrawable {
     private:
     int width, height;
     std::string name; 
+
+    std::mutex mtx;
     public:
     BackgroundWater(int width, int height) : PriDrawable(0) {
         this->width = width;
@@ -19,9 +23,18 @@ class BackgroundWater : public PriDrawable {
     void populateFrames(int frames) {
         for(int i = 0; i < frames; i++) {
             std::cout << "Generating frame " << i << " of " << frames << std::endl;
-            textures.push_back(regenerate());
+            std::cout << "texture size is " << textures.size() << std::endl; 
+            std::thread textureThread(&BackgroundWater::addFrameToTextures, this);
+            textureThread.detach();
         }
-        resetToDefaultTexture();
+        //resetToDefaultTexture();
+    }
+
+    void addFrameToTextures() {
+        mtx.lock();
+        auto newBackground = regenerate();
+        textures.push_back(newBackground);
+        mtx.unlock();
     }
 
     std::shared_ptr<sf::Texture> regenerate() {

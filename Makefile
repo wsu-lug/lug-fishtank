@@ -1,4 +1,4 @@
-LIBS=-lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system
+LIBS=-lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system -lpthread
 OUTPUT=lug-fishtank
 
 all: 

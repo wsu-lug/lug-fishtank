@@ -70,8 +70,6 @@ class Fish : public PriDrawable {
 
     void animate() {
         swim();
-
-
     };
 
     void setPositionAndAngle() {

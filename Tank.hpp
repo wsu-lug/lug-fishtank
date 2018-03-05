@@ -6,6 +6,10 @@
 #include <vector>
 #include <memory>
 #include <algorithm>
+
+#include <thread>
+
+
 class Tank {
     private:
     int height;
@@ -46,6 +50,10 @@ class Tank {
         }
     };
 
+    void animateObjectsThread(std::shared_ptr<PriDrawable> d) {
+        d->animate();
+    }
+
     void drawObjects(void) {
         window->clear();
         std::make_heap(drawables.begin(), drawables.end(), PriCompare());
@@ -54,7 +62,8 @@ class Tank {
             std::shared_ptr<PriDrawable> item = drawables[i];
             //std::cout << "Drew item with priority " << item->priority << std::endl;
             window->draw((*(item)));
-            item->animate();
+            std::thread updater(&PriDrawable::animate, item);
+            updater.detach();
         }
         ticks = (ticks + 1) % 60;
         if(ticks % 10 == 0) {
