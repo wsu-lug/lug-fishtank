@@ -10,13 +10,13 @@ class BackgroundWater : public PriDrawable {
     private:
     int width, height;
     std::string name; 
-
     std::mutex mtx;
     public:
     BackgroundWater(int width, int height) : PriDrawable(0) {
         this->width = width;
         this->height = height;
         name = "water";
+        ticks = 0;
         populateFrames(10);
     }
 
@@ -37,8 +37,26 @@ class BackgroundWater : public PriDrawable {
         mtx.unlock();
     }
 
-    std::shared_ptr<sf::Texture> regenerate() {
-        auto temp = std::make_shared<sf::Texture>();
+    void animate() {
+        if(ticks == 10) {
+            ticks = 0;
+            if(textures.size() > currentTextureIndex) {
+                setTexture(*textures[currentTextureIndex]);
+                currentTextureIndex = (currentTextureIndex + 1) % 10;
+            }
+        }
+        else {
+            ticks++;
+        }
+        
+    }
+
+    ~BackgroundWater() {
+        std::cout << "DESTROYED!!!!" << std::endl;
+    }
+
+    sf::Texture * regenerate() {
+        auto temp = new sf::Texture();
         sf::Image img;
         img.create(width, height, sf::Color::Black);
         std::random_device rd;
