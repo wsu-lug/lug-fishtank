@@ -37,7 +37,7 @@ class Tank {
     }
 
     void simulate(void) {
-        int threadNumber = 5;
+        int threadNumber = 3;
         threadFinishLine.resize(threadNumber);
         int fishId = 3;
         window = new sf::RenderWindow(sf::VideoMode(width, height), "LUG Fish Tank");
@@ -49,7 +49,7 @@ class Tank {
         }
         window->setFramerateLimit(60);
         window->setVerticalSyncEnabled(true);
-        int fish_number = 500;
+        int fish_number = 5;
         for(int i = 0; i < fish_number; i++) {
             auto new_fish = std::make_shared<Fish>(1, this->width, this->height, 3 + last_id++);
             if(new_fish == nullptr) {

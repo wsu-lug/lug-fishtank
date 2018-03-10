@@ -59,7 +59,7 @@ class Fish : public PriDrawable {
         this->type = type;
         if(type == 1) {
             sf::Image img;
-            img.loadFromFile("/home/czhanacek/Coding/lug-fishtank/images/fish/fish1.png");
+            img.loadFromFile("./images/fish/fish1.png");
             for(int y = 0; y < img.getSize().y; y++) {
                 int x = 0;
                 while(x < img.getSize().x) {
