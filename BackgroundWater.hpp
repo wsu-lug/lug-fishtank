@@ -9,14 +9,14 @@
 class BackgroundWater : public PriDrawable {
     private:
     std::string name; 
-
     std::mutex mtx;
     public:
     BackgroundWater(int width, int height, SDL_Renderer * renderer) : PriDrawable(0, renderer, width, height) {
         name = "water";
-        populateFrames(1);
         std::cout << "Hello from background water" << std::endl;
         setPosition(Vector2Df{.x = 0, .y = 0});
+        ticks = 0;
+        populateFrames(10);
     }
 
     void populateFrames(int frames) {
@@ -36,11 +36,28 @@ class BackgroundWater : public PriDrawable {
         textures.push_back(newBackground);
         mtx.unlock();
     }
+        
+    void animate() {
+        if(ticks == 10) {
+            ticks = 0;
+            if(textures.size() > currentTextureIndex) {
+                //setTexture(*textures[currentTextureIndex]);
+                currentTextureIndex = (currentTextureIndex + 1) % 10;
+            }
+        }
+        else {
+            ticks++;
+        }
+        
+    }
+
+    ~BackgroundWater() {
+        std::cout << "DESTROYED!!!!" << std::endl;
+    }
 
     SDL_Texture * regenerate() {
         SDL_Texture * temp = nullptr;
         SDL_Surface * surface = SDL_CreateRGBSurface(0, getWidth(), getHeight(), 32, 0, 30, 0, 0);
-        
         std::random_device rd;
         std::mt19937 e2(rd());
         std::uniform_int_distribution<int> dist(10, 150);
