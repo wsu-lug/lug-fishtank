@@ -13,39 +13,38 @@ class Fish : public PriDrawable {
     double speed;
     double angle; // range from -90 to 90 degrees
     double acceleration;
-    typedef enum Direction {Left, Right};
-    Direction dir;
     typedef enum State {Swimming, Eating, Resting, Fighting};
     State state;
-    double scaleFactor;
+    //double scaleFactor;
     int windowwidth;
     int windowheight;
 
     bool naturalAcc;
     
     public:
-    Fish(int type, int width, int height, int id) : PriDrawable(id) {
+    Fish(int type, int width, int height, int id, SDL_Renderer * renderer) : PriDrawable(id, renderer, 50, 50) {
         health = Excellent;
         age = 0;
         naturalAcc = true;
         speed = 0;
         acceleration = 0;
         dir = Left;
-        setPosition(width / 2, height / 2);
+        //setPosition(width / 2, height / 2);
         windowwidth = width;
         windowheight = height;
         state = Swimming;
         this->type = type;
         if(type == 1) {
-            std::shared_ptr<sf::Texture> temp = std::make_shared<sf::Texture>();
-            temp->loadFromFile("/home/czhanacek/Coding/lug-fishtank/images/fish/fish1.png");
-            textures.push_back(temp);
-            setTexture(*textures[currentTextureIndex]);
-            
-            scaleFactor = 120.0 / textures[currentTextureIndex]->getSize().x;
-            scale(sf::Vector2f(scaleFactor, scaleFactor));
+            //std::shared_ptr<sf::Texture> temp = std::make_shared<sf::Texture>();
+            //temp->loadFromFile("/home/czhanacek/Coding/lug-fishtank/images/fish/fish1.png");
+            //textures.push_back(temp);
+            addNewTexture("./images/fish/fish1.png");
+            currentTextureIndex = 0;
+            //setTexture(*textures[currentTextureIndex]);
+
+            //scale(sf::Vector2f(scaleFactor, scaleFactor));
         }
-        setOrigin(0.5 * textures[currentTextureIndex]->getSize().x, 0.5 * textures[currentTextureIndex]->getSize().y);
+        //setOrigin(0.5 * textures[currentTextureIndex]->getSize().x, 0.5 * textures[currentTextureIndex]->getSize().y);
     }
 
     void changeDirection() {
@@ -55,14 +54,14 @@ class Fish : public PriDrawable {
         }
         else if(dir == Right) {
             dir = Left;
-            scale(-1.0f, 1.0f);
+            flipHorizontal();
         }
     }
     void swim(void) {
-        std::uniform_int_distribution<int> dist(1, 100);
-        std::random_device rd;
-        std::mt19937 e2(rd());
-        int action = dist(e2);
+        //std::uniform_int_distribution<int> dist(1, 100);
+        //std::random_device rd;
+        //std::mt19937 e2(rd());
+        //int action = dist(e2);
         if(state == Swimming) {
             swimTick();
         }
@@ -78,11 +77,14 @@ class Fish : public PriDrawable {
         double currenty = getPosition().y;
         int directionMultiplier = 1;
         if(speed > 0) {
+            dir = Right;
             if(getScale().x > 0) {
+
                 setScale(getScale().x * -1, getScale().y);
             }
         }
         if(speed < 0) {
+            dir = Left;
             if(getScale().x < 0) {
                 setScale(getScale().x * -1, getScale().y);
             }

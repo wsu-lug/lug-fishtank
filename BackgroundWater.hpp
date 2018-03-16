@@ -8,67 +8,71 @@
 
 class BackgroundWater : public PriDrawable {
     private:
-    int width, height;
     std::string name; 
 
     std::mutex mtx;
     public:
-    BackgroundWater(int width, int height) : PriDrawable(0) {
-        this->width = width;
-        this->height = height;
+    BackgroundWater(int width, int height, SDL_Renderer * renderer) : PriDrawable(0, renderer, width, height) {
         name = "water";
-        populateFrames(10);
+        populateFrames(1);
+        std::cout << "Hello from background water" << std::endl;
+        setPosition(Vector2Df{.x = 0, .y = 0});
     }
 
     void populateFrames(int frames) {
         for(int i = 0; i < frames; i++) {
             std::cout << "Generating frame " << i << " of " << frames << std::endl;
             std::cout << "texture size is " << textures.size() << std::endl; 
-            std::thread textureThread(&BackgroundWater::addFrameToTextures, this);
-            textureThread.detach();
+            //std::thread textureThread(&BackgroundWater::addFrameToTextures, this);
+            //textureThread.detach();
+            addFrameToTextures();
         }
         //resetToDefaultTexture();
     }
 
     void addFrameToTextures() {
         mtx.lock();
-        auto newBackground = regenerate();
+        SDL_Texture * newBackground = regenerate();
         textures.push_back(newBackground);
         mtx.unlock();
     }
 
-    std::shared_ptr<sf::Texture> regenerate() {
-        auto temp = std::make_shared<sf::Texture>();
-        sf::Image img;
-        img.create(width, height, sf::Color::Black);
+    SDL_Texture * regenerate() {
+        SDL_Texture * temp = nullptr;
+        SDL_Surface * surface = SDL_CreateRGBSurface(0, getWidth(), getHeight(), 32, 0, 30, 0, 0);
+        
         std::random_device rd;
         std::mt19937 e2(rd());
         std::uniform_int_distribution<int> dist(10, 150);
-        sf::Color currentColor = getNewColor();
-        for(int y = 0; y < height; y++) {
+        SDL_LockSurface(surface);
+        SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGBA(surface->format, 0xFF, 0xFF, 0xFF, 0xFF));
+        Color currentColor = getNewColor();
+        for(int y = 0; y < getHeight(); y++) {
             int x = 0;
-            while(x < width) {
+            while(x < getWidth()) {
                 int iters = dist(e2);
                 currentColor = getNewColor();
                 for(int i = 0; i < iters; i++)  {
-                    if(x + i < width) {
-                        img.setPixel(x + i, y, currentColor);
+                    if(x + i < getWidth()) {
+                        setPixel(surface, x, y, buildColor(currentColor));
+                        //setPixel(surface, x, y, 0xFFFFFFFF);
                     }
                     
                 }
                 x += iters;
             }
         }
-        
-        temp->loadFromImage(img);
+        SDL_UnlockSurface(surface);
+        temp = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
         return temp;
     }
 
-    sf::Color getNewColor() {
+    Color getNewColor() {
         std::random_device rd;
         std::mt19937 e2(rd());
-        std::uniform_real_distribution<double> distribution(10, 25); // seemed to work well
-        return sf::Color(0, (int)(220 + distribution(e2)) % 255, (int)(200 + distribution(e2)) % 255);
+        std::uniform_int_distribution<uint8_t> distribution(10, 25); // seemed to work well
+        return Color {.r = 0, .g = (uint8_t)((220 + distribution(e2)) % 255), .b = (uint8_t)((200 + distribution(e2)) % 255), .a = 255};
     }
 
 };
