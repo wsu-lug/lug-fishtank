@@ -57,12 +57,12 @@ class BackgroundWater : public PriDrawable {
 
     SDL_Texture * regenerate() {
         SDL_Texture * temp = nullptr;
-        SDL_Surface * surface = SDL_CreateRGBSurface(0, getWidth(), getHeight(), 32, 0, 30, 0, 0);
+        SDL_Surface * surface = SDL_CreateRGBSurface(0, getWidth(), getHeight(), 32, 0, 0, 0, 0);
         std::random_device rd;
         std::mt19937 e2(rd());
         std::uniform_int_distribution<int> dist(10, 150);
         SDL_LockSurface(surface);
-        SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGBA(surface->format, 0xFF, 0xFF, 0xFF, 0xFF));
+        //SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGBA(surface->format, 0, 0, 0, 0));
         Color currentColor = getNewColor();
         for(int y = 0; y < getHeight(); y++) {
             int x = 0;
@@ -71,10 +71,9 @@ class BackgroundWater : public PriDrawable {
                 currentColor = getNewColor();
                 for(int i = 0; i < iters; i++)  {
                     if(x + i < getWidth()) {
-                        setPixel(surface, x, y, buildColor(currentColor));
+                        setPixel(surface, x + i, y, buildColor(currentColor));
                         //setPixel(surface, x, y, 0xFFFFFFFF);
                     }
-                    
                 }
                 x += iters;
             }
@@ -89,7 +88,7 @@ class BackgroundWater : public PriDrawable {
         std::random_device rd;
         std::mt19937 e2(rd());
         std::uniform_int_distribution<uint8_t> distribution(10, 25); // seemed to work well
-        return Color {.r = 0, .g = (uint8_t)((220 + distribution(e2)) % 255), .b = (uint8_t)((200 + distribution(e2)) % 255), .a = 255};
+        return Color {.r = 0, .g = (uint8_t)((220 + distribution(e2)) % 255), .b = (uint8_t)((200 + distribution(e2)) % 255), .a = (uint8_t)255};
     }
 
 };

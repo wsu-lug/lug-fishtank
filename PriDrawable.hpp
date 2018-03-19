@@ -137,11 +137,11 @@ class PriDrawable {
     static uint32_t buildColor(Color color) {
         uint32_t holder = color.r;
         holder = holder << 8;
-        holder = holder | color.g;
+        holder = holder ^ color.b;
         holder = holder << 8;
-        holder = holder | color.b;
+        holder = holder ^ color.g;
         holder = holder << 8;
-        holder = holder | color.a;
+        holder = holder ^ color.a;
         //std::cout << "Built color " << holder << std::endl;
         return holder;
     }
