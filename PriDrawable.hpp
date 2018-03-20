@@ -1,7 +1,9 @@
 #ifndef PRIDRAWABLE
 #define PRIDRAWABLE
 #include <SDL2/SDL.h>
-#include <SDL2_image/SDL_image.h>
+//#include <SDL2.h>
+#include <SDL2/SDL_image.h>
+//#include <SDL2_image/SDL_image.h>
 #include <vector>
 #include <memory>
 #include <string>
@@ -177,7 +179,7 @@ class PriDrawable {
         SDL_Rect tempSrc = position;
         tempSrc.h *= scaleFactor;
         tempSrc.w *= scaleFactor;
-        std::cout << "HELP!!!!!!!!!" << std::endl;
+        //std::cout << "HELP!!!!!!!!!" << std::endl;
         SDL_RendererFlip flip = SDL_FLIP_NONE;
         if(dir == Right) {
             flip = SDL_FLIP_HORIZONTAL;

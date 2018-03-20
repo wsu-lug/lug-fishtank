@@ -38,9 +38,6 @@ class Fish : public PriDrawable {
         breedtimes = 0;
         age = 0;
         std::srand(std::time(0));
-        excellentSpeedLimit = 6;
-        fairSpeedLimit = 5;
-        poorSpeedLimit = 2;
         naturalAge = 100;
         naturalAcc = true;
         speed = 0;
@@ -48,6 +45,7 @@ class Fish : public PriDrawable {
         acceleration = 0;
         angleacceleration = 0;
         dir = Left;
+        setInitialStats();
         //setPosition(width / 2, height / 2);
         windowwidth = width;
         windowheight = height;
@@ -72,6 +70,13 @@ class Fish : public PriDrawable {
         return age > rotAge && floatedToTop;
     }
 
+
+    void setInitialStats() {
+        auto deathAgeDist = std::poisson_distribution<int>(naturalAge);
+        std::random_device rd;
+        std::mt19937 e2(rd());
+        deathAge = deathAgeDist(e2);
+    }
 
     ~Fish() {
         //std::cout << "FINALLY DESTROYED!" << std::endl;
@@ -131,12 +136,12 @@ class Fish : public PriDrawable {
             
             angle = 90;
             presentingAngle = 0;
-            speed = -1;
+            speed = -0.5;
             setDeadPositionAndAngle();
         }
         else {
             floatedToTop = true;
-            speed = 0.03 * sin(3.14 * (ticks + (age * 60)) / 120.0);
+            //speed = 0.03 * sin(3.14 * (ticks + (age * 60)) / 120.0);
             setDeadPositionAndAngle();
         }
         

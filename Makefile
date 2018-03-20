@@ -1,11 +1,12 @@
 LIBS= -lpthread
+LINUXLIBS= -lSDL2 -lSDL2_image
 OUTPUT=lug-fishtank
 
 
 
 all: 
 	@echo "** Building the fishtank **"
-	g++ -g -std=c++14 *.cpp -o $(OUTPUT) $(LIBS)
+	g++ -g -std=c++14 *.cpp -o $(OUTPUT) $(LIBS) $(LINUXLIBS)
 
 
 mac:
@@ -14,7 +15,7 @@ mac:
 
 release:
 	@echo "** Building the fishtank for release **"
-	g++ -std=c++14 *.cpp -o $(OUTPUT) $(LIBS)
+	g++ -std=c++14 *.cpp -o $(OUTPUT) $(LIBS) $(LINUXLIBS)
 
 install:
 	@echo "** Installing the fishtank **"

@@ -116,7 +116,7 @@ class Tank {
         drawables = std::move(temp);
         std::cout << "drawables size " << drawables.size() << std::endl; 
         resetFinishLine();
-        SDL_Delay(1000.0/60);
+        SDL_Delay(1000/60);
     }
 
     void animateObjectsThread(std::vector<std::shared_ptr<PriDrawable> > & objects, int id, int threadCount, std::vector<bool> & finish) { 
