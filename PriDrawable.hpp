@@ -87,6 +87,10 @@ class PriDrawable {
         }
     }
 
+    virtual bool isClose(Vector2D) {
+        return false;
+    }
+
     void flipHorizontal() {
         //SDL_RendererFlip flip = SDL_FLIP_HORIZONTAL;
         //SDL_RenderCopyEx(renderer, textures[currentTextureIndex], &rect, &position, 0, nullptr, flip);

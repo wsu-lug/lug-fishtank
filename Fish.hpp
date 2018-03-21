@@ -4,6 +4,8 @@
 #include "PriDrawable.hpp"
 #include <ctime>
 
+#ifndef FISH
+#define FISH
 
 class Fish : public PriDrawable {
     private:
@@ -68,6 +70,10 @@ class Fish : public PriDrawable {
         //if(age > rotAge && floatedToTop)
             //std::cout << "fish is rotten" << std::endl;
         return age > rotAge && floatedToTop;
+    }
+
+    bool isClose() {
+        
     }
 
 
@@ -293,3 +299,4 @@ class Fish : public PriDrawable {
         return degrees * ((2 * 3.14159) / 180.0);
     };
 };
+#endif

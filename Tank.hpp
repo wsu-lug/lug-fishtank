@@ -1,15 +1,18 @@
-#ifndef TANK
-#define TANK
 #include "Fish.hpp"
 #include "BackgroundWater.hpp"
+#include "NearbyDetector.hpp"
 //#include "WebcamPassthrough.hpp"
 #include <queue>
 #include <vector>
 #include <memory>
 #include <algorithm>
-
-
 #include <thread>
+#ifndef TANK
+#define TANK
+
+
+
+
 
 
 class Tank {

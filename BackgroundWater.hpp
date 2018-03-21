@@ -50,6 +50,11 @@ class BackgroundWater : public PriDrawable {
         }
         
     }
+    
+    // lets each class define what it means by "close"
+    bool isClose(Vector2D point) {
+        return false;
+    }
 
     ~BackgroundWater() {
         std::cout << "DESTROYED!!!!" << std::endl;
