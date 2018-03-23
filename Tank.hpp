@@ -59,7 +59,7 @@ class Tank {
         threadFinishLine.resize(threadNumber);
         int fishId = 3;
 
-        int fish_number = 50;
+        int fish_number = 100;
         for(int i = 0; i < fish_number; i++) {
             auto new_fish = std::make_shared<Fish>(1, this->width, this->height, 3 + fishId++, renderer);
             if(new_fish == nullptr) {
@@ -117,9 +117,8 @@ class Tank {
         SDL_RenderPresent(renderer);
         std::make_heap(temp.begin(), temp.end(), PriCompare());
         drawables = std::move(temp);
-        std::cout << "drawables size " << drawables.size() << std::endl; 
         resetFinishLine();
-        SDL_Delay(1000/60);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000/60));
     }
 
     void animateObjectsThread(std::vector<std::shared_ptr<PriDrawable> > & objects, int id, int threadCount, std::vector<bool> & finish) { 

@@ -33,13 +33,13 @@ class NearbyDetector {
     void detect() {
         std::queue<std::shared_ptr<PriDrawable> > things = std::queue<std::shared_ptr<PriDrawable> >();
         Vector2D thePoint = pickRandomPointInScreen();
-        Vector2D comparePoint;
         for(int i = 0; i < draws->size(); i++) {
             
-            if((*draws)[i]->isClose()) {
+            if((*draws)[i]->isClose(thePoint)) {
                 things.push((*draws)[i]);
             }
         }
+        
         
     }
 

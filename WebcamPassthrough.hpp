@@ -71,4 +71,8 @@ class WebcamPassthrough : public PriDrawable {
         }
         
     }
+
+    bool isClose(Vector2D) {
+        return false;
+    }
 };

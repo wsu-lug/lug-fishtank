@@ -91,11 +91,7 @@ class PriDrawable {
         return false;
     }
 
-    void flipHorizontal() {
-        //SDL_RendererFlip flip = SDL_FLIP_HORIZONTAL;
-        //SDL_RenderCopyEx(renderer, textures[currentTextureIndex], &rect, &position, 0, nullptr, flip);
 
-    }
 
     Vector2Df getScale() {
         return {.x = scaleFactor, .y = scaleFactor};
@@ -152,11 +148,11 @@ class PriDrawable {
         return holder;
     }
 
-    const uint16_t getX(void) {
+    const double getX(void) {
         return position.x;
     }
 
-    const uint16_t getY(void) {
+    const double getY(void) {
         return position.y;
     }
 
@@ -176,8 +172,8 @@ class PriDrawable {
         return position.w;
     }
 
-    const Vector2D getPosition(void) {
-        return Vector2D {.x = getX(), .y = getY()};
+    const Vector2Df getPosition(void) {
+        return Vector2Df {.x = getX(), .y = getY()};
     }
     void draw() {
         SDL_Rect tempSrc = position;
@@ -188,7 +184,7 @@ class PriDrawable {
         if(dir == Right) {
             flip = SDL_FLIP_HORIZONTAL;
         }
-        SDL_RenderCopyEx(renderer, textures[currentTextureIndex], &rect, &position, angle, nullptr, flip);
+        SDL_RenderCopyEx(renderer, textures[currentTextureIndex], &rect, &position, angle, NULL, flip);
     }
 
     void setScale(double x, double y) {

@@ -20,7 +20,7 @@ class Fish : public PriDrawable {
     double poorSpeedLimit;
     double rotAge;
     double deathAge;
-    double angle; // range from -90 to 90 degrees
+    //double angle; // range from -90 to 90 degrees
     double acceleration;
     double angleacceleration;
     bool floatedToTop;
@@ -42,7 +42,11 @@ class Fish : public PriDrawable {
         std::srand(std::time(0));
         naturalAge = 100;
         naturalAcc = true;
+        excellentSpeedLimit = 3;
+        fairSpeedLimit = 2;
+        poorSpeedLimit = 1;
         speed = 0;
+        setPosition(width / 2, height / 2);
         floatedToTop = false;
         acceleration = 0;
         angleacceleration = 0;
@@ -66,14 +70,18 @@ class Fish : public PriDrawable {
         //setOrigin(0.5 * textures[currentTextureIndex]->getSize().x, 0.5 * textures[currentTextureIndex]->getSize().y);
     }
 
+    // This function is just used to define the conditions of fish garbage collection 
     bool isRotten() {
-        //if(age > rotAge && floatedToTop)
-            //std::cout << "fish is rotten" << std::endl;
         return age > rotAge && floatedToTop;
     }
 
-    bool isClose() {
-        
+    bool isClose(Vector2D point) {
+        if(abs(point.x - getPosition().x) < 20 && abs(point.y - getPosition().y) < 20) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
 
@@ -94,7 +102,6 @@ class Fish : public PriDrawable {
         }
         else if(dir == Right) {
             dir = Left;
-            flipHorizontal();
         }
     }
     void swim(void) {
@@ -117,7 +124,7 @@ class Fish : public PriDrawable {
             swim(); 
         }
         
-        if(ticks == 0) {
+        if(ticks == 59) {
             age++;
             //std::cout << "fish " << priority << " life " << age / (double)deathAge << std::endl;
         }
@@ -172,7 +179,10 @@ class Fish : public PriDrawable {
         int directionMultiplier = 1;
         
         setPosition(currentx + (directionMultiplier * speed * cos(getRads(angle))), currenty + (directionMultiplier * speed * sin(getRads(angle))));
+        //setPosition(currentx + (directionMultiplier * speed * 1), currenty + (directionMultiplier * speed * 0));
+
         setRotation(angle);
+            
         
     }
 
@@ -183,16 +193,9 @@ class Fish : public PriDrawable {
         modifyDirection();
         if(speed > 0) {
             dir = Right;
-            if(getScale().x > 0) {
-
-                setScale(getScale().x * -1, getScale().y);
-            }
         }
         if(speed < 0) {
             dir = Left;
-            if(getScale().x < 0) {
-                setScale(getScale().x * -1, getScale().y);
-            }
         }
         setSwimPositionAndAngle();
     };
@@ -203,7 +206,7 @@ class Fish : public PriDrawable {
         std::mt19937 e2(rd());
         int shouldChange = dist(e2);
         int compensateAngleChange = 30 + (2 * abs(speed));
-        float bounds1 = 0.2;
+        float bounds1 = 0.3;
         if(shouldChange == 1) {
             std::uniform_real_distribution<double> realdist(-10,10);
             angleacceleration = realdist(e2);
@@ -214,7 +217,7 @@ class Fish : public PriDrawable {
             angle = -40;
         }
         if(getPosition().y < (bounds1 * windowheight)) {
-            if(getScale().x < 0) {
+            if(dir == Right) {
                 angleacceleration += compensateAngleChange;
             }
             else {
@@ -222,7 +225,7 @@ class Fish : public PriDrawable {
             }
         }
         if(getPosition().y > (windowheight * (1 - bounds1))) {
-            if(getScale().x < 0) {
+            if(dir == Right) {
                 angleacceleration -= compensateAngleChange;
             }
             else {
@@ -266,7 +269,7 @@ class Fish : public PriDrawable {
         std::random_device rd;
         std::mt19937 e2(rd());
         int shouldChange = dist(e2);
-        std::uniform_real_distribution<double> realdist(-0.1, 0.1);
+        std::uniform_real_distribution<double> realdist(-10, 10);
         acceleration += realdist(e2);
         float bounds1 = 0.2;
         float bounds2 = 0.1;
