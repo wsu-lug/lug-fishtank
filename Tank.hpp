@@ -37,29 +37,30 @@ class Tank {
         SDL_Init(SDL_INIT_EVERYTHING);
         IMG_Init(imgFlags);
         window = SDL_CreateWindow("LUG Fish Tank", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, 0);
-        //screen = SDL_GetWindowSurface(window);
-        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	std::cout << SDL_GetError() << std::endl;
+//screen = SDL_GetWindowSurface(window);
+        renderer = SDL_CreateRenderer(window, -1,  SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
         std::cout << "Creating renderer" << std::endl;
         std::cout << SDL_GetError() << std::endl;
         this->height = height;
         this->width = width;
         SDL_SetRenderTarget(renderer, screenTexture);
         screenTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
-        water = std::make_shared<BackgroundWater>(width, height, renderer);
+        //water = std::make_shared<BackgroundWater>(width, height, renderer);
         
         
-        drawables.push_back(water);
+        //drawables.push_back(water);
         
         
     };
 
 
     void simulate(void) {
-        int threadNumber = 3;
+        int threadNumber = 1;
         threadFinishLine.resize(threadNumber);
         int fishId = 3;
 
-        int fish_number = 100;
+        int fish_number = 3;
         for(int i = 0; i < fish_number; i++) {
             auto new_fish = std::make_shared<Fish>(1, this->width, this->height, 3 + fishId++, renderer);
             if(new_fish == nullptr) {
@@ -72,6 +73,7 @@ class Tank {
         
         for(int i = 0; i < threadNumber; i++) {
             auto newthread = std::thread(&Tank::animateObjectsThread, this, std::ref(drawables), i, threadNumber, std::ref(threadFinishLine));
+            std::cout << "made a thread" << std::endl;
             newthread.detach();
         }
         bool quit = false;
@@ -118,18 +120,12 @@ class Tank {
         std::make_heap(temp.begin(), temp.end(), PriCompare());
         drawables = std::move(temp);
         resetFinishLine();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000/60));
+        //std::this_thread::sleep_for(std::chrono::milliseconds(1000/60));
     }
 
     void animateObjectsThread(std::vector<std::shared_ptr<PriDrawable> > & objects, int id, int threadCount, std::vector<bool> & finish) { 
         while(true) {
             if(!finish[id]) {
-                if(id == 0) {
-                    if(objects[0] != nullptr) {
-                        objects[0]->animate();
-                    }
-                }
-                else {
                     int potentialIndex = id;
                     while(potentialIndex < objects.size()) {
                         if((objects[potentialIndex])->isRotten()) {
@@ -138,11 +134,8 @@ class Tank {
                         else {
                             objects[potentialIndex]->animate();
                         }
-                        
-                        potentialIndex += (threadCount - 1);
+                        potentialIndex += (threadCount);
                         //std::cout << "Potential index " << potentialIndex << std::endl;
-                        
-                        
                     }    
                 }
                 finish[id] = true;

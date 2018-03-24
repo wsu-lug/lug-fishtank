@@ -1,12 +1,13 @@
-LIBS= -lpthread
+LIBS= -lpthread -lbcm_host -I/opt/vc/include -L/opt/vc/lib
 LINUXLIBS= -lSDL2 -lSDL2_image
+SDL_CONFIG := $(shell sdl2-config --cflags --libs)
 OUTPUT=lug-fishtank
 
 
 
 all: 
 	@echo "** Building the fishtank **"
-	g++ -g -std=c++14 *.cpp -o $(OUTPUT) $(LIBS) $(LINUXLIBS)
+	g++ -g -std=c++14 *.cpp -o $(OUTPUT) $(LIBS) $(LINUXLIBS) $(SDL_CONFIG)
 
 
 mac:
@@ -24,3 +25,5 @@ install:
 uninstall:
 	@echo "** Uninstalling the fishtank **"
 	rm /usr/bin/$(OUTPUT)
+test:
+	g++ -std=c++14 test.cpp -o tester $(LIBS) $(LINUXLIBS)

@@ -16,7 +16,7 @@ class BackgroundWater : public PriDrawable {
         std::cout << "Hello from background water" << std::endl;
         setPosition(Vector2Df{.x = 0, .y = 0});
         ticks = 0;
-        populateFrames(10);
+        populateFrames(1);
     }
 
     void populateFrames(int frames) {
@@ -42,7 +42,7 @@ class BackgroundWater : public PriDrawable {
             ticks = 0;
             if(textures.size() > currentTextureIndex) {
                 //setTexture(*textures[currentTextureIndex]);
-                currentTextureIndex = (currentTextureIndex + 1) % 10;
+                currentTextureIndex = (currentTextureIndex + 1) % textures.size();
             }
         }
         else {
