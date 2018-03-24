@@ -65,7 +65,7 @@ class WebcamPassthrough : public PriDrawable {
             SDL_Texture * vidframe = SDL_CreateTextureFromSurface(renderer, frameSurface);
             SDL_FreeSurface(frameSurface);
             //std::cout << "FUCK2" << std::endl;
-            
+            SDL_DestroyTexture(textures[0]);
             textures[0] = vidframe;
             
         }
