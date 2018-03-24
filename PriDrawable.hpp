@@ -73,7 +73,9 @@ class PriDrawable {
         bool returnStatus = true;
         SDL_Surface * newSurface = SDL_LoadBMP(filepath.c_str());
         rect.h = newSurface->h;
+        std::cout << "rect height is " << rect.h << std::endl;
         rect.w = newSurface->w;
+        std::cout << "rect width is " << rect.h << std::endl;
         if(newSurface == nullptr) {
             std::cout << "GRUFK" << std::endl;
         }
@@ -85,6 +87,7 @@ class PriDrawable {
             std::cout << "HELP!" << std::endl;
             std::cout << SDL_GetError() << std::endl;
         }
+        return returnStatus;
     }
 
     virtual bool isClose(Vector2D) {
