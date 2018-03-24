@@ -68,10 +68,10 @@ class PriDrawable {
 
     
 
-    // Filepath should be to a png
+    // Filepath should be to a bitmap!!!!!
     bool addNewTexture(std::string filepath) {
         bool returnStatus = true;
-        SDL_Surface * newSurface = IMG_Load(filepath.c_str());
+        SDL_Surface * newSurface = SDL_LoadBMP(filepath.c_str());
         rect.h = newSurface->h;
         rect.w = newSurface->w;
         if(newSurface == nullptr) {

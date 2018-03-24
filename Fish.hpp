@@ -35,7 +35,7 @@ class Fish : public PriDrawable {
     double naturalAge;
 
     public:
-    Fish(int type, int width, int height, int id, SDL_Renderer * renderer) : PriDrawable(id, renderer, 50, 50) {
+    Fish(int type, int width, int height, int id, SDL_Renderer * renderer) : PriDrawable(id, renderer, 300, 300) {
         health = Excellent;
         breedtimes = 0;
         age = 0;
@@ -61,7 +61,7 @@ class Fish : public PriDrawable {
             //std::shared_ptr<sf::Texture> temp = std::make_shared<sf::Texture>();
             //temp->loadFromFile("/home/czhanacek/Coding/lug-fishtank/images/fish/fish1.png");
             //textures.push_back(temp);
-            addNewTexture("./images/fish/fish1.png");
+            addNewTexture("./images/fish/fish1.bmp");
             currentTextureIndex = 0;
             //setTexture(*textures[currentTextureIndex]);
 
