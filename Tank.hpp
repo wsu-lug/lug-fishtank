@@ -24,6 +24,7 @@ class Tank {
     SDL_Surface * screen;
     SDL_Texture * screenTexture;
     SDL_Window * window;
+    int lastSize;
     SDL_Renderer * renderer;
     std::shared_ptr<WebcamPassthrough> water;
     std::vector<std::shared_ptr<PriDrawable> > drawables;
@@ -35,8 +36,8 @@ class Tank {
         ticks = 0;
         int imgFlags = IMG_INIT_PNG;
         SDL_Init(SDL_INIT_EVERYTHING);
-        IMG_Init(imgFlags);
-        window = SDL_CreateWindow("LUG Fish Tank", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, 0);
+        //IMG_Init(imgFlags);
+        window = SDL_CreateWindow("LUG Fish Tank", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
 	std::cout << SDL_GetError() << std::endl;
 //screen = SDL_GetWindowSurface(window);
         renderer = SDL_CreateRenderer(window, -1,  SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
@@ -49,14 +50,14 @@ class Tank {
         water = std::make_shared<WebcamPassthrough>(width, height, renderer);
         
         
-        drawables.push_back(water);
+        drawables.push_back(std::move(water));
         
         
     };
 
 
     void simulate(void) {
-        int threadNumber = 1;
+        int threadNumber = 3;
         threadFinishLine.resize(threadNumber);
         int fishId = 3;
 
@@ -70,7 +71,7 @@ class Tank {
             
             drawables.push_back(std::move(new_fish));
         }
-        
+        lastSize = drawables.size();
         for(int i = 0; i < threadNumber; i++) {
             auto newthread = std::thread(&Tank::animateObjectsThread, this, std::ref(drawables), i, threadNumber, std::ref(threadFinishLine));
             std::cout << "made a thread" << std::endl;
@@ -95,52 +96,65 @@ class Tank {
         screen = nullptr;
         SDL_DestroyWindow(window);
         window = nullptr;
-        IMG_Quit();
+        //IMG_Quit();
         SDL_Quit();
     }
 
     void drawObjects(void) {
         SDL_RenderClear(renderer);
         while(!threadsFinished()) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            std::this_thread::sleep_for(std::chrono::microseconds(1));
         }
-        
-        std::vector<std::shared_ptr<PriDrawable> > temp;
+        if(lastSize != drawables.size()) {
+            std::make_heap(drawables.begin(), drawables.end());
+        }
         for(int i = 0; i < drawables.size(); i++) {
             std::shared_ptr<PriDrawable> & item = drawables[i];
             //std::cout << "Drew item with priority " << item->priority << std::endl;
             if(item.get() != nullptr) {
                 item->draw();
-                temp.push_back(std::move(drawables[i]));
+                //temp.push_back(std::move(drawables[i]));
              }
              
         }
         
         SDL_RenderPresent(renderer);
-        std::make_heap(temp.begin(), temp.end(), PriCompare());
-        drawables = std::move(temp);
+        
         resetFinishLine();
         //std::this_thread::sleep_for(std::chrono::milliseconds(1000/60));
     }
 
     void animateObjectsThread(std::vector<std::shared_ptr<PriDrawable> > & objects, int id, int threadCount, std::vector<bool> & finish) { 
+        bool renderThreadForBackground = true;
         while(true) {
             if(!finish[id]) {
-                int potentialIndex = id;
-                while(potentialIndex < objects.size()) {
-                    if((objects[potentialIndex])->isRotten()) {
-                        objects[potentialIndex] = nullptr;
+                if(renderThreadForBackground && id == 0) {
+                    objects[0]->animate();
+                }
+                else {
+                    int potentialIndex = id;
+                    while(potentialIndex < objects.size()) {
+                        if((objects[potentialIndex])->isRotten()) {
+                            objects[potentialIndex] = nullptr;
+                        }
+                        else {
+                            objects[potentialIndex]->animate();
+                        }
+                        if(renderThreadForBackground) {
+                            potentialIndex += (threadCount - 1);
+                        }
+                        else {
+                            potentialIndex += 1;
+                        }
+                        //std::cout << "Potential index " << potentialIndex << std::endl;
                     }
-                    else {
-                        objects[potentialIndex]->animate();
-                    }
-                    potentialIndex += (threadCount);
-                    //std::cout << "Potential index " << potentialIndex << std::endl;
+                    
                 }
                 finish[id] = true;
+                
             }
             else {
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                std::this_thread::sleep_for(std::chrono::microseconds(1));
             }
         }
            

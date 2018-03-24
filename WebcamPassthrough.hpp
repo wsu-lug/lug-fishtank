@@ -1,6 +1,7 @@
 #include<opencv2/opencv.hpp>
 #include "PriDrawable.hpp"
 //#include <X11/Xlib.h> 
+#include <thread>
 
 class WebcamPassthrough : public PriDrawable {
     private:
@@ -40,14 +41,21 @@ class WebcamPassthrough : public PriDrawable {
         SDL_FreeSurface(frameSurface);
         std::cout << "FUCK2" << std::endl;
         textures.push_back(vidframe);
+        auto newthread = std::thread(&WebcamPassthrough::frameGrabberThread, this, std::ref(cap));
+        newthread.detach();
     }
+
+    void frameGrabberThread(cv::VideoCapture &cap2) {
+        cap2.grab();
+    }
+
     void animate() {
-        if(counter == 0) {
+        
+        if(counter == 10) {
             counter = 0;
-            cap >> frameRGB;
+            cap.retrieve(frameRGB);
             // auto thing = sf::seconds(1);
             // sf::sleep(thing);
-            cap >> frameRGB;
             // auto thing = sf::seconds(1);
             // sf::sleep(thing);
             //cv::cvtColor(frameRGB,frameRGBA,cv::COLOR_BGR2RGBA); 
@@ -71,7 +79,6 @@ class WebcamPassthrough : public PriDrawable {
         }
         else {
             counter += 1;
-            cap >> frameRGB;
         }
         
     }
