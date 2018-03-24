@@ -1,7 +1,7 @@
 #include "Fish.hpp"
 #include "BackgroundWater.hpp"
 #include "NearbyDetector.hpp"
-//#include "WebcamPassthrough.hpp"
+#include "WebcamPassthrough.hpp"
 #include <queue>
 #include <vector>
 #include <memory>
@@ -25,7 +25,7 @@ class Tank {
     SDL_Texture * screenTexture;
     SDL_Window * window;
     SDL_Renderer * renderer;
-    std::shared_ptr<BackgroundWater> water;
+    std::shared_ptr<WebcamPassthrough> water;
     std::vector<std::shared_ptr<PriDrawable> > drawables;
     std::vector<bool> threadFinishLine;
     int fish_number;
@@ -46,10 +46,10 @@ class Tank {
         this->width = width;
         SDL_SetRenderTarget(renderer, screenTexture);
         screenTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
-        //water = std::make_shared<BackgroundWater>(width, height, renderer);
+        water = std::make_shared<WebcamPassthrough>(width, height, renderer);
         
         
-        //drawables.push_back(water);
+        drawables.push_back(water);
         
         
     };
@@ -126,17 +126,16 @@ class Tank {
     void animateObjectsThread(std::vector<std::shared_ptr<PriDrawable> > & objects, int id, int threadCount, std::vector<bool> & finish) { 
         while(true) {
             if(!finish[id]) {
-                    int potentialIndex = id;
-                    while(potentialIndex < objects.size()) {
-                        if((objects[potentialIndex])->isRotten()) {
-                            objects[potentialIndex] = nullptr;
-                        }
-                        else {
-                            objects[potentialIndex]->animate();
-                        }
-                        potentialIndex += (threadCount);
-                        //std::cout << "Potential index " << potentialIndex << std::endl;
-                    }    
+                int potentialIndex = id;
+                while(potentialIndex < objects.size()) {
+                    if((objects[potentialIndex])->isRotten()) {
+                        objects[potentialIndex] = nullptr;
+                    }
+                    else {
+                        objects[potentialIndex]->animate();
+                    }
+                    potentialIndex += (threadCount);
+                    //std::cout << "Potential index " << potentialIndex << std::endl;
                 }
                 finish[id] = true;
             }

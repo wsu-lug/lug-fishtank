@@ -1,16 +1,16 @@
-//#include<opencv2/opencv.hpp>
+#include<opencv2/opencv.hpp>
 #include "PriDrawable.hpp"
 //#include <X11/Xlib.h> 
 
 class WebcamPassthrough : public PriDrawable {
     private:
     cv::VideoCapture cap;
-    cv::Mat frameRGB, frameRGBA;
-    sf::Image image;
+    cv::Mat frameRGB;
+
     int width, height;
     int counter;
     public:
-    WebcamPassthrough(int width, int height) : PriDrawable(0) {
+    WebcamPassthrough(int width, int height, SDL_Renderer * renderer) : PriDrawable(0, renderer, width, height) {
         cap = cv::VideoCapture(-1);
         this->width = width;
         this->height = height;
@@ -25,22 +25,21 @@ class WebcamPassthrough : public PriDrawable {
         cap >> frameRGB;
         // auto thing = sf::seconds(1);
         // sf::sleep(thing);
-        cv::cvtColor(frameRGB,frameRGBA,cv::COLOR_BGR2RGBA); 
+        //cv::cvtColor(frameRGB,frameRGBA,cv::COLOR_BGR2RGBA); 
         std::cout << "FUCK" << std::endl;
-        if(frameRGBA.empty()) {
-            std::cout << "MAJOR" << std::endl;
-        }
-        image.create(frameRGBA.cols, frameRGBA.rows, frameRGBA.ptr());
+        IplImage opencvimg2 = (IplImage)frameRGB;
+        IplImage* opencvimg = &opencvimg2;
+        SDL_Surface * frameSurface = SDL_CreateRGBSurfaceFrom(
+                         (void*)opencvimg->imageData,
+                         opencvimg->width, opencvimg->height,
+                         opencvimg->depth*opencvimg->nChannels,
+                         opencvimg->widthStep,
+                         0xff0000, 0x00ff00, 0x0000ff, 0);
         std::cout << "FUCK" << std::endl;
-        sf::Texture * vidframe = new sf::Texture();
-        vidframe->loadFromImage(image);
-        
+        SDL_Texture * vidframe = SDL_CreateTextureFromSurface(renderer, frameSurface);
+        SDL_FreeSurface(frameSurface);
         std::cout << "FUCK2" << std::endl;
         textures.push_back(vidframe);
-        setTexture(*textures[currentTextureIndex]);
-        float xscale = width / image.getSize().x;
-        float yscale = height / image.getSize().y;
-        scale(xscale, yscale);
     }
     void animate() {
         if(counter == 0) {
@@ -48,21 +47,26 @@ class WebcamPassthrough : public PriDrawable {
             cap >> frameRGB;
             // auto thing = sf::seconds(1);
             // sf::sleep(thing);
-            cv::cvtColor(frameRGB,frameRGBA,cv::COLOR_BGR2RGBA); 
-            cv::resize(frameRGBA, frameRGBA, cv::Size(), 1, 1);
-            if(frameRGBA.empty() == false) {
-                //image.create(frameRGBA.cols, frameRGBA.rows, frameRGBA.ptr());
-                textures[0]->update(frameRGBA.ptr());
-                
-                float xscale = (float)width / image.getSize().x;
-                float yscale = (float)height / image.getSize().y;
-                
-                setScale(xscale, yscale);
-                setPosition(width / 2.0, height / 2.0);
-                setOrigin(textures[0]->getSize().x / 2, textures[0]->getSize().y / 2);
-                scale(-1, 1);
-                
-            }
+            cap >> frameRGB;
+            // auto thing = sf::seconds(1);
+            // sf::sleep(thing);
+            //cv::cvtColor(frameRGB,frameRGBA,cv::COLOR_BGR2RGBA); 
+            //std::cout << "FUCK" << std::endl;
+
+            IplImage opencvimg2 = (IplImage)frameRGB;
+            IplImage* opencvimg = &opencvimg2;
+            SDL_Surface * frameSurface = SDL_CreateRGBSurfaceFrom(
+                            (void*)opencvimg->imageData,
+                            opencvimg->width, opencvimg->height,
+                            opencvimg->depth*opencvimg->nChannels,
+                            opencvimg->widthStep,
+                            0xff0000, 0x00ff00, 0x0000ff, 0);
+            //std::cout << "FUCK" << std::endl;
+            SDL_Texture * vidframe = SDL_CreateTextureFromSurface(renderer, frameSurface);
+            SDL_FreeSurface(frameSurface);
+            //std::cout << "FUCK2" << std::endl;
+            
+            textures[0] = vidframe;
             
         }
         else {

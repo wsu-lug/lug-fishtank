@@ -1,5 +1,6 @@
-LIBS= -lpthread -lbcm_host -I/opt/vc/include -L/opt/vc/lib
-LINUXLIBS= -lSDL2 -lSDL2_image
+LIBS= -lpthread -I/opt/vc/include -L/opt/vc/lib
+LINUXLIBS= -lSDL2 -lSDL2_image 
+OPENCV= -I/usr/local/include/opencv -I/usr/local/include/opencv2 -L/usr/local/lib/ -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect -lopencv_contrib -lopencv_legacy -lopencv_stitching
 SDL_CONFIG := $(shell sdl2-config --cflags --libs)
 OUTPUT=lug-fishtank
 
@@ -7,7 +8,7 @@ OUTPUT=lug-fishtank
 
 all: 
 	@echo "** Building the fishtank **"
-	g++ -g -std=c++14 *.cpp -o $(OUTPUT) $(LIBS) $(LINUXLIBS) $(SDL_CONFIG)
+	g++ -g -std=c++14 *.cpp -o $(OUTPUT) $(LIBS) $(LINUXLIBS) $(SDL_CONFIG) $(OPENCV)
 
 
 mac:
