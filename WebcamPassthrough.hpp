@@ -2,6 +2,7 @@
 #include <thread>
 #include "PriDrawable.hpp"
 #include <X11/Xlib.h> 
+#include <queue>
 
 class WebcamPassthrough : public PriDrawable {
     private:
@@ -10,6 +11,7 @@ class WebcamPassthrough : public PriDrawable {
     sf::Image image;
     int width, height;
     int counter;
+    std::queue<cv::Mat> imgqueue;
     public:
     WebcamPassthrough(int width, int height) : PriDrawable(0) {
         cap = cv::VideoCapture(-1);
@@ -20,9 +22,9 @@ class WebcamPassthrough : public PriDrawable {
         if(!cap.isOpened()) {
             return;
         }
-        
-        cap.set(CV_CAP_PROP_FRAME_WIDTH,400);
-        cap.set(CV_CAP_PROP_FRAME_HEIGHT,300);
+        cap.grab();
+        cap.set(CV_CAP_PROP_FRAME_WIDTH,100);
+        cap.set(CV_CAP_PROP_FRAME_HEIGHT,75);
         cap.retrieve(frameRGB);
         // auto thing = sf::seconds(1);
         // sf::sleep(thing);
@@ -42,40 +44,49 @@ class WebcamPassthrough : public PriDrawable {
         float xscale = width / image.getSize().x;
         float yscale = height / image.getSize().y;
         scale(xscale, yscale);
-        auto newthread = std::thread(&WebcamPassthrough::frameGrabberThread, this, std::ref(cap));
+        auto newthread = std::thread(&WebcamPassthrough::frameGrabberThread, this);
         newthread.detach();
     }
 
-    void frameGrabberThread(cv::VideoCapture &cap2) {
-        cap2.grab();
-    }
-    
-    void animate() {
-        if(counter == 10) {
-            counter = 0;
-            cap.retrieve(frameRGB);
-            // auto thing = sf::seconds(1);
-            // sf::sleep(thing);
-            cv::cvtColor(frameRGB,frameRGBA,cv::COLOR_BGR2RGBA); 
-            cv::resize(frameRGBA, frameRGBA, cv::Size(), 1, 1);
-            if(frameRGBA.empty() == false) {
-                //image.create(frameRGBA.cols, frameRGBA.rows, frameRGBA.ptr());
-                textures[0]->update(frameRGBA.ptr());
+    void frameGrabberThread() {
+        counter = 0;
+        while(1) {
+            if(counter == 0) {
+                cv::Mat capture, capture2;
                 
-                float xscale = (float)width / image.getSize().x;
-                float yscale = (float)height / image.getSize().y;
-                
-                setScale(xscale, yscale);
-                setPosition(width / 2.0, height / 2.0);
-                setOrigin(textures[0]->getSize().x / 2, textures[0]->getSize().y / 2);
-                scale(-1, 1);
-                
+                cap >> capture;
+                cv::cvtColor(capture,capture2,cv::COLOR_BGR2RGBA); 
+                imgqueue.push(std::move(capture2));
+                counter += 1;
+            }
+            else {
+                counter = (counter + 1) % 14;
             }
             
         }
-        else {
-            counter += 1;
-        }
         
+    }
+
+    void animate() {
+
+        // auto thing = sf::seconds(1);
+        // sf::sleep(thing);
+        //cv::resize(frameRGBA, frameRGBA, cv::Size(), 1, 1);
+        if(imgqueue.empty() == false) {
+            cv::Mat frameRGBA = std::move(imgqueue.front());
+            imgqueue.pop();
+            //image.create(frameRGBA.cols, frameRGBA.rows, frameRGBA.ptr());
+            textures[0]->update(frameRGBA.ptr());
+            
+            float xscale = (float)width / image.getSize().x;
+            float yscale = (float)height / image.getSize().y;
+            
+            setScale(xscale, yscale);
+            setPosition(width / 2.0, height / 2.0);
+            setOrigin(textures[0]->getSize().x / 2, textures[0]->getSize().y / 2);
+            scale(-1, 1);
+            
+        }
+      
     }
 };
