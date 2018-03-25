@@ -43,7 +43,7 @@ class WebcamPassthrough : public PriDrawable {
         scale(xscale, yscale);
     }
     void animate() {
-        if(counter == 0) {
+        if(counter == 10) {
             counter = 0;
             cap >> frameRGB;
             // auto thing = sf::seconds(1);
@@ -67,7 +67,7 @@ class WebcamPassthrough : public PriDrawable {
         }
         else {
             counter += 1;
-            cap >> frameRGB;
+            cap.grab();
         }
         
     }

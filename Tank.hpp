@@ -20,7 +20,7 @@ class Tank {
     int width;
 
     sf::RenderWindow * window;
-    std::shared_ptr<BackgroundWater> water;
+    std::shared_ptr<WebcamPassthrough> water;
     std::vector<std::shared_ptr<PriDrawable> > drawables;
     std::vector<bool> threadFinishLine;
     int fish_number;
@@ -31,8 +31,8 @@ class Tank {
         this->height = height;
         this->width = width;
         last_id = 0;
-        water = std::make_shared<BackgroundWater>(width, height);
-        //water = std::make_shared<WebcamPassthrough>(width, height);
+        //water = std::make_shared<BackgroundWater>(width, height);
+        water = std::make_shared<WebcamPassthrough>(width, height);
         drawables.push_back(water);
     }
 
