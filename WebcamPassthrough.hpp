@@ -17,7 +17,7 @@ class WebcamPassthrough : public PriDrawable {
     WebcamPassthrough(int width, int height) : PriDrawable(0) {
         cap = cv::VideoCapture(-1);
         this->width = width;
-        buffer_length = 12;
+        buffer_length = 90;
         this->height = height;
         counter = 0;
         displayedTextureIndex = 0;
