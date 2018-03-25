@@ -17,7 +17,7 @@ class WebcamPassthrough : public PriDrawable {
     WebcamPassthrough(int width, int height) : PriDrawable(0) {
         cap = cv::VideoCapture(-1);
         this->width = width;
-        buffer_length = 90;
+        buffer_length = 20;
         this->height = height;
         counter = 0;
         displayedTextureIndex = 0;
@@ -26,11 +26,18 @@ class WebcamPassthrough : public PriDrawable {
             return;
         }
 
-        cap.set(CV_CAP_PROP_FRAME_WIDTH,100);
-        cap.set(CV_CAP_PROP_FRAME_HEIGHT,75);
+        //cap.set(CV_CAP_PROP_FRAME_WIDTH,100);
+        //cap.set(CV_CAP_PROP_FRAME_HEIGHT,75);
 
         auto newthread = std::thread(&WebcamPassthrough::frameGrabberThread, this);
         newthread.detach();
+    }
+
+    ~WebcamPassthrough() {
+        for(int i = 0; i < textures.size(); i++) {
+            delete textures[i];
+        }
+        
     }
 
     void frameGrabberThread() {
@@ -55,6 +62,7 @@ class WebcamPassthrough : public PriDrawable {
             }
                
             cv::cvtColor(capture,capture2,cv::COLOR_BGR2RGBA); 
+            cv::blur(capture2, capture2, cv::Size(50, 50));
             //image.create(capture2.cols, capture2.rows, capture2.ptr());
             
             image.create(capture2.cols, capture2.rows, capture2.ptr());
@@ -74,7 +82,7 @@ class WebcamPassthrough : public PriDrawable {
         // sf::sleep(thing);
         //cv::resize(frameRGBA, frameRGBA, cv::Size(), 1, 1);
         if(textures.size() >= buffer_length) {
-            std::cout << "Set texture at " << currentTextureIndex << std::endl;
+            //std::cout << "Set texture at " << currentTextureIndex << std::endl;
             //std::this_thread::sleep_for(std::chrono::milliseconds(10));
             setTexture(*(textures[(currentTextureIndex) % buffer_length]));
             
