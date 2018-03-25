@@ -89,6 +89,7 @@ class Tank {
                     while(potentialIndex < objects.size()) {
                         if((objects[potentialIndex])->isRotten()) {
                             objects[potentialIndex] = nullptr;
+                            objects[potentialIndex] = std::make_shared<Fish>(1, this->width, this->height, 3 + last_id++);
                         }
                         else {
                             objects[potentialIndex]->animate();
