@@ -1,4 +1,5 @@
 #include<opencv2/opencv.hpp>
+#include <thread>
 #include "PriDrawable.hpp"
 #include <X11/Xlib.h> 
 
@@ -20,8 +21,8 @@ class WebcamPassthrough : public PriDrawable {
             return;
         }
         
-        //cap.set(CV_CAP_PROP_FRAME_WIDTH,400);
-        //cap.set(CV_CAP_PROP_FRAME_HEIGHT,300);
+        cap.set(CV_CAP_PROP_FRAME_WIDTH,400);
+        cap.set(CV_CAP_PROP_FRAME_HEIGHT,300);
         cap >> frameRGB;
         // auto thing = sf::seconds(1);
         // sf::sleep(thing);
@@ -41,7 +42,14 @@ class WebcamPassthrough : public PriDrawable {
         float xscale = width / image.getSize().x;
         float yscale = height / image.getSize().y;
         scale(xscale, yscale);
+        auto newthread = std::thread(&WebcamPassthrough::frameGrabberThread, this, std::ref(cap));
+        newthread.detach();
     }
+
+    void frameGrabberThread(cv::VideoCapture &cap2) {
+        cap2.grab();
+    }
+    
     void animate() {
         if(counter == 10) {
             counter = 0;

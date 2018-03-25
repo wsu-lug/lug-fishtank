@@ -47,7 +47,7 @@ class Tank {
             if (event.type == sf::Event::Closed)
                 window->close();
         }
-        window->setFramerateLimit(60);
+        //window->setFramerateLimit(60);
         window->setVerticalSyncEnabled(true);
         int fish_number = 5;
         for(int i = 0; i < fish_number; i++) {
@@ -144,7 +144,7 @@ class Tank {
         window->display();
         std::make_heap(temp.begin(), temp.end(), PriCompare());
         drawables = std::move(temp);
-        std::cout << "drawables size " << drawables.size() << std::endl; 
+        //std::cout << "drawables size " << drawables.size() << std::endl; 
         resetFinishLine();
     }
 
