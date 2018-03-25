@@ -45,19 +45,22 @@ class WebcamPassthrough : public PriDrawable {
             image.create(capture2.cols, capture2.rows, capture2.ptr());
             vidframe->loadFromImage(image);
             textures.push_back(vidframe);
-            std::cout << "added frame to buffer. size is now " << textures.size() << std::endl;
+            //std::cout << "added frame to buffer. size is now " << textures.size() << std::endl;
 
         }
         currentTextureIndex = 0;
         while(1) {
-            cap >> capture;
+            for(int i = 0; i < 10; i++) {
+                 cap >> capture;
+            }
+               
             cv::cvtColor(capture,capture2,cv::COLOR_BGR2RGBA); 
             //image.create(capture2.cols, capture2.rows, capture2.ptr());
             
             image.create(capture2.cols, capture2.rows, capture2.ptr());
-            std::cout << "Gonna try and update..." << ((currentTextureIndex - 3) + buffer_length) % buffer_length << std::endl;
+            //std::cout << "Gonna try and update..." << ((currentTextureIndex - 3) + buffer_length) % buffer_length << std::endl;
             textures[((currentTextureIndex - 3) + buffer_length) % buffer_length]->update(image);
-            std::cout << "updated buffer at index " << ((currentTextureIndex - 3) + buffer_length) % buffer_length << std::endl;
+            //std::cout << "updated buffer at index " << ((currentTextureIndex - 3) + buffer_length) % buffer_length << std::endl;
 
             currentTextureIndex = (currentTextureIndex + 1) % buffer_length;
             
