@@ -7,61 +7,58 @@
 class WebcamPassthrough : public PriDrawable {
     private:
     cv::VideoCapture cap;
-    cv::Mat frameRGB, frameRGBA;
-    sf::Image image;
+    cv::Mat capture, capture2;
+    
     int width, height;
     int counter;
     std::queue<cv::Mat> imgqueue;
+    int buffer_length;
+    int displayedTextureIndex;
     public:
     WebcamPassthrough(int width, int height) : PriDrawable(0) {
         cap = cv::VideoCapture(-1);
         this->width = width;
+        buffer_length = 30;
         this->height = height;
         counter = 0;
-        
+        displayedTextureIndex = 0;
+        currentTextureIndex = 0;
         if(!cap.isOpened()) {
             return;
         }
-        cap.grab();
+
         cap.set(CV_CAP_PROP_FRAME_WIDTH,100);
         cap.set(CV_CAP_PROP_FRAME_HEIGHT,75);
-        cap.retrieve(frameRGB);
-        // auto thing = sf::seconds(1);
-        // sf::sleep(thing);
-        cv::cvtColor(frameRGB,frameRGBA,cv::COLOR_BGR2RGBA); 
-        std::cout << "FUCK" << std::endl;
-        if(frameRGBA.empty()) {
-            std::cout << "MAJOR" << std::endl;
-        }
-        image.create(frameRGBA.cols, frameRGBA.rows, frameRGBA.ptr());
-        std::cout << "FUCK" << std::endl;
-        sf::Texture * vidframe = new sf::Texture();
-        vidframe->loadFromImage(image);
-        
-        std::cout << "FUCK2" << std::endl;
-        textures.push_back(vidframe);
-        setTexture(*textures[currentTextureIndex]);
-        float xscale = width / image.getSize().x;
-        float yscale = height / image.getSize().y;
-        scale(xscale, yscale);
+
         auto newthread = std::thread(&WebcamPassthrough::frameGrabberThread, this);
         newthread.detach();
     }
 
     void frameGrabberThread() {
         counter = 0;
+        while(textures.size() < buffer_length) {
+            sf::Texture * vidframe = new sf::Texture();
+            sf::Image image;
+            cap >> capture;
+            cv::cvtColor(capture,capture2,cv::COLOR_BGR2RGBA); 
+            image.create(capture2.cols, capture2.rows, capture2.ptr());
+            vidframe->loadFromImage(image);
+            textures.push_back(vidframe);
+            std::cout << "added frame to buffer. size is now " << textures.size() << std::endl;
+
+        }
+        currentTextureIndex = 0;
         while(1) {
-            if(counter == 0) {
-                cv::Mat capture, capture2;
-                
-                cap >> capture;
-                cv::cvtColor(capture,capture2,cv::COLOR_BGR2RGBA); 
-                imgqueue.push(std::move(capture2));
-                counter += 1;
-            }
-            else {
-                counter = (counter + 1) % 14;
-            }
+            cap >> capture;
+            sf::Image image;
+            cv::cvtColor(capture,capture2,cv::COLOR_BGR2RGBA); 
+            //image.create(capture2.cols, capture2.rows, capture2.ptr());
+
+            std::cout << "Gonna try and update..." << std::endl;
+            textures[(currentTextureIndex - 10) % buffer_length]->update(capture2.ptr());
+            std::cout << "updated buffer at index " << (currentTextureIndex - 10) % buffer_length << std::endl;
+
+            currentTextureIndex = (currentTextureIndex + 1) % buffer_length;
             
         }
         
@@ -72,18 +69,18 @@ class WebcamPassthrough : public PriDrawable {
         // auto thing = sf::seconds(1);
         // sf::sleep(thing);
         //cv::resize(frameRGBA, frameRGBA, cv::Size(), 1, 1);
-        if(imgqueue.empty() == false) {
-            cv::Mat frameRGBA = std::move(imgqueue.front());
-            imgqueue.pop();
-            //image.create(frameRGBA.cols, frameRGBA.rows, frameRGBA.ptr());
-            textures[0]->update(frameRGBA.ptr());
+        if(textures.size() >= buffer_length && displayedTextureIndex != currentTextureIndex) {
+            std::cout << "Set texture at " << currentTextureIndex << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            setTexture(*(textures[(currentTextureIndex) % buffer_length]));
             
-            float xscale = (float)width / image.getSize().x;
-            float yscale = (float)height / image.getSize().y;
+            displayedTextureIndex = currentTextureIndex;
+            float xscale = (float)width / 100;
+            float yscale = (float)height / 75;
             
             setScale(xscale, yscale);
             setPosition(width / 2.0, height / 2.0);
-            setOrigin(textures[0]->getSize().x / 2, textures[0]->getSize().y / 2);
+            setOrigin(textures[currentTextureIndex]->getSize().x / 2, textures[currentTextureIndex]->getSize().y / 2);
             scale(-1, 1);
             
         }
