@@ -23,7 +23,7 @@ class WebcamPassthrough : public PriDrawable {
         
         cap.set(CV_CAP_PROP_FRAME_WIDTH,400);
         cap.set(CV_CAP_PROP_FRAME_HEIGHT,300);
-        cap >> frameRGB;
+        cap.retrieve(frameRGB);
         // auto thing = sf::seconds(1);
         // sf::sleep(thing);
         cv::cvtColor(frameRGB,frameRGBA,cv::COLOR_BGR2RGBA); 
@@ -75,7 +75,6 @@ class WebcamPassthrough : public PriDrawable {
         }
         else {
             counter += 1;
-            cap.grab();
         }
         
     }
