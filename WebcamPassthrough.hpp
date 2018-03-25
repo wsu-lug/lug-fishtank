@@ -53,7 +53,7 @@ class WebcamPassthrough : public PriDrawable {
     void animate() {
         if(counter == 10) {
             counter = 0;
-            cap.retrieve(frameRGB)
+            cap.retrieve(frameRGB);
             // auto thing = sf::seconds(1);
             // sf::sleep(thing);
             cv::cvtColor(frameRGB,frameRGBA,cv::COLOR_BGR2RGBA); 
