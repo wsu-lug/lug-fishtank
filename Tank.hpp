@@ -47,7 +47,7 @@ class Tank {
             if (event.type == sf::Event::Closed)
                 window->close();
         }
-        //window->setFramerateLimit(60);
+        window->setFramerateLimit(60);
         window->setVerticalSyncEnabled(true);
         int fish_number = 2;
         for(int i = 0; i < fish_number; i++) {

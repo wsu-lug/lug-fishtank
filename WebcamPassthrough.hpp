@@ -70,12 +70,12 @@ class WebcamPassthrough : public PriDrawable {
         // auto thing = sf::seconds(1);
         // sf::sleep(thing);
         //cv::resize(frameRGBA, frameRGBA, cv::Size(), 1, 1);
-        if(textures.size() >= buffer_length && displayedTextureIndex != currentTextureIndex) {
+        if(textures.size() >= buffer_length) {
             std::cout << "Set texture at " << currentTextureIndex << std::endl;
             //std::this_thread::sleep_for(std::chrono::milliseconds(10));
             setTexture(*(textures[(currentTextureIndex) % buffer_length]));
             
-            displayedTextureIndex = currentTextureIndex;
+            //displayedTextureIndex = currentTextureIndex;
             float xscale = (float)width / image.getSize().x;
             float yscale = (float)height / image.getSize().y;
             
