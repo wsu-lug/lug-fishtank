@@ -49,7 +49,7 @@ class Tank {
         }
         window->setFramerateLimit(60);
         window->setVerticalSyncEnabled(true);
-        int fish_number = 2;
+        int fish_number = 200;
         for(int i = 0; i < fish_number; i++) {
             auto new_fish = std::make_shared<Fish>(1, this->width, this->height, 3 + last_id++);
             if(new_fish == nullptr) {
