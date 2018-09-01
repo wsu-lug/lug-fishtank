@@ -3,7 +3,7 @@
 
 int main(void) {
     XInitThreads();
-    Tank * tank = new Tank(1200, 800);
+    Tank * tank = new Tank(2400, 1600);
     tank->simulate();
     
 }

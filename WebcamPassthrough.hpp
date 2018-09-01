@@ -17,7 +17,7 @@ class WebcamPassthrough : public PriDrawable {
     WebcamPassthrough(int width, int height) : PriDrawable(0) {
         cap = cv::VideoCapture(-1);
         this->width = width;
-        buffer_length = 90;
+        buffer_length = 20;
         this->height = height;
         counter = 0;
         displayedTextureIndex = 0;
@@ -50,16 +50,16 @@ class WebcamPassthrough : public PriDrawable {
         }
         currentTextureIndex = 0;
         while(1) {
-            for(int i = 0; i < 10; i++) {
-                 cap >> capture;
-            }
+            //for(int i = 0; i < 4; i++) {
+            cap >> capture;
+            //}
                
             cv::cvtColor(capture,capture2,cv::COLOR_BGR2RGBA); 
             //image.create(capture2.cols, capture2.rows, capture2.ptr());
             
             image.create(capture2.cols, capture2.rows, capture2.ptr());
             //std::cout << "Gonna try and update..." << ((currentTextureIndex - 3) + buffer_length) % buffer_length << std::endl;
-            textures[((currentTextureIndex - 3) + buffer_length) % buffer_length]->update(image);
+            textures[((currentTextureIndex + 1) + buffer_length) % buffer_length]->update(image);
             //std::cout << "updated buffer at index " << ((currentTextureIndex - 3) + buffer_length) % buffer_length << std::endl;
 
             currentTextureIndex = (currentTextureIndex + 1) % buffer_length;
