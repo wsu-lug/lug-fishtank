@@ -73,8 +73,7 @@ bool operator< (const std::shared_ptr<PriDrawable> & l, const std::shared_ptr<Pr
 struct PriCompare {
     bool operator()(const std::shared_ptr<PriDrawable>& lhs, const std::shared_ptr<PriDrawable>& rhs)
     {
-            return lhs->priority > rhs->priority;
-        
+        return lhs->priority > rhs->priority;
     }
 };
 

@@ -1,4 +1,6 @@
-LIBS=-lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system -lpthread -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect -lopencv_contrib -lopencv_legacy -lopencv_stitching -lX11
+SFML=$(shell pkg-config --libs sfml-all)
+OPENCV=$(shell pkg-config --libs opencv)
+LIBS=$(SFML) -lpthread $(OPENCV) -lX11
 OUTPUT=lug-fishtank
 
 all: 

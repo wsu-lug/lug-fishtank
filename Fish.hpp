@@ -132,7 +132,6 @@ class Fish : public PriDrawable {
         
         if(ticks == 0) {
             age++;
-            //std::cout << "fish " << priority << " life " << age / (double)deathAge << std::endl;
         }
     };
 
@@ -191,7 +190,7 @@ class Fish : public PriDrawable {
 
     // Precondition: fish is in swimming state
     void swimTick() {
-        
+        // pick new random accelerations and directions.
         modifyAcceleration();
         modifyDirection();
         if(speed > 0) {

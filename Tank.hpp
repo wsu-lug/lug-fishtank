@@ -50,6 +50,10 @@ class Tank {
         window->setFramerateLimit(60);
         window->setVerticalSyncEnabled(true);
         int fish_number = 50;
+        while(window->isOpen() == 0); // Bad practice?
+        // Window manager may have resized us
+        this->width = window->getSize().x;
+        this->height = window->getSize().y;
         for(int i = 0; i < fish_number; i++) {
             auto new_fish = std::make_shared<Fish>(1, this->width, this->height, 3 + last_id++);
             if(new_fish == nullptr) {
@@ -69,8 +73,10 @@ class Tank {
             drawObjects();
             while(window->pollEvent(event)) {
                 // Close window: exit
-                if (event.type == sf::Event::Closed)
+                if (event.type == sf::Event::Closed) {
                     window->close();
+                    return;
+                }
             }
 
         }
