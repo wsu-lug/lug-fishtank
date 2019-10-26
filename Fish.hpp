@@ -3,6 +3,11 @@
 #include <iostream>
 #include "PriDrawable.hpp"
 #include <ctime>
+#include "DNA.hpp"
+#include <chrono>
+#include <thread>
+
+#define FISH_MAX_AGE 10000
 
 
 class Fish : public PriDrawable {
@@ -30,7 +35,7 @@ class Fish : public PriDrawable {
     double scaleFactor;
     int windowwidth;
     int windowheight;
-
+    EvolutionContainer evolution;
     bool naturalAcc;
     double naturalAge;
 
@@ -57,6 +62,22 @@ class Fish : public PriDrawable {
         windowheight = height;
         state = Swimming;
         this->type = type;
+        
+        
+        determineInitialStats();
+    }
+
+    void determineInitialStats() {
+        std::cout << " ><>" << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        evolution.pheno[PHENO_AGE] = new Phenotype(PhenotypeEvaluators::Scaled(0, FISH_MAX_AGE));
+        for(short i = 1; i < 10; i++) {
+            evolution.pheno[i] = new Phenotype(PhenotypeEvaluators::Scaled(i, 255));
+        }
+        evolution.pheno[PHENO_SIZE] = new Phenotype(PhenotypeEvaluators::ScaledOffset(2, 40, 60));
+        deathAge = evolution.pheno[PHENO_AGE]->evaluate(&evolution.dna, &evolution.env);
+        rotAge = deathAge * 1.05;
+
         if(type == 1) {
             sf::Image img;
             img.loadFromFile(std::string("./images/fish/fish1.png").c_str());
@@ -64,7 +85,19 @@ class Fish : public PriDrawable {
                 int x = 0;
                 while(x < img.getSize().x) {
                     if(img.getPixel(x, y).b > 200) {
-                        img.setPixel(x, y, sf::Color::Red);
+                        img.setPixel(x, y, sf::Color(evolution.pheno[PHENO_COLOR1]->evaluate(&evolution.dna, &evolution.env), 
+                            evolution.pheno[PHENO_COLOR2]->evaluate(&evolution.dna, 
+                            &evolution.env), evolution.pheno[PHENO_COLOR3]->evaluate(&evolution.dna, &evolution.env), 255));
+                    }
+                    else if(img.getPixel(x, y).g > 100) {
+                        img.setPixel(x, y, sf::Color(evolution.pheno[PHENO_COLOR4]->evaluate(&evolution.dna, &evolution.env), 
+                            evolution.pheno[PHENO_COLOR5]->evaluate(&evolution.dna, 
+                            &evolution.env), evolution.pheno[PHENO_COLOR6]->evaluate(&evolution.dna, &evolution.env), 255));
+                    }
+                    else if(img.getPixel(x, y).b > 50) {
+                        img.setPixel(x, y, sf::Color(evolution.pheno[PHENO_COLOR7]->evaluate(&evolution.dna, &evolution.env), 
+                            evolution.pheno[PHENO_COLOR8]->evaluate(&evolution.dna, 
+                            &evolution.env), evolution.pheno[PHENO_COLOR9]->evaluate(&evolution.dna, &evolution.env), 255));
                     }
                     x++;
                 }
@@ -74,20 +107,12 @@ class Fish : public PriDrawable {
             textures.push_back(std::move(temp));
             setTexture(*textures[currentTextureIndex]);
             
-            scaleFactor = 100.0 / textures[currentTextureIndex]->getSize().x;
+            scaleFactor = evolution.pheno[PHENO_SIZE]->evaluate(&evolution.dna, &evolution.env) / textures[currentTextureIndex]->getSize().x;
             scale(sf::Vector2f(scaleFactor, scaleFactor));
+            setOrigin(0.5 * textures[currentTextureIndex]->getSize().x, 0.5 * textures[currentTextureIndex]->getSize().y);
 
         }
-        setOrigin(0.5 * textures[currentTextureIndex]->getSize().x, 0.5 * textures[currentTextureIndex]->getSize().y);
-        determineInitialStats();
-    }
 
-    void determineInitialStats() {
-        std::poisson_distribution<int> dist((int)naturalAge);
-        std::random_device rd;
-        std::mt19937 e2(rd());
-        deathAge = dist(e2);
-        rotAge = deathAge * 1.05;
     }
 
     bool isRotten() {
