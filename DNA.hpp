@@ -8,19 +8,6 @@
 #define INTMAX 0xFFFFFFFFFFFFFFFF // 64 bits of int
 
 
-// PHENOTYPE DEFS
-#define PHENO_AGE 0
-#define PHENO_COLOR1 1
-#define PHENO_COLOR2 2
-#define PHENO_COLOR3 3
-#define PHENO_COLOR4 4
-#define PHENO_COLOR5 5
-#define PHENO_COLOR6 6
-#define PHENO_COLOR7 7
-#define PHENO_COLOR8 8
-#define PHENO_COLOR9 9
-#define PHENO_SIZE 10
-
 #include <cstring>
 #include <random>
 #include <functional>
@@ -83,7 +70,7 @@ class Dna {
 
 class EvolutionContainer {
     public:
-    Phenotype * pheno[PHENO_COUNT];
+    std::unordered_map<std::string, Phenotype *> pheno;
     Environment env;
     Dna dna;
     

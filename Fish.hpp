@@ -70,12 +70,12 @@ class Fish : public PriDrawable {
     void determineInitialStats() {
         std::cout << " ><>" << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        evolution.pheno[PHENO_AGE] = new Phenotype(PhenotypeEvaluators::Scaled(0, FISH_MAX_AGE));
+        evolution.pheno["age"] = new Phenotype(PhenotypeEvaluators::Scaled(0, FISH_MAX_AGE));
         for(short i = 1; i < 10; i++) {
-            evolution.pheno[i] = new Phenotype(PhenotypeEvaluators::Scaled(i, 255));
+            evolution.pheno["color" + std::to_string(i)] = new Phenotype(PhenotypeEvaluators::Scaled(i, 255));
         }
-        evolution.pheno[PHENO_SIZE] = new Phenotype(PhenotypeEvaluators::ScaledOffset(2, 40, 60));
-        deathAge = evolution.pheno[PHENO_AGE]->evaluate(&evolution.dna, &evolution.env);
+        evolution.pheno["size"] = new Phenotype(PhenotypeEvaluators::ScaledOffset(2, 40, 60));
+        deathAge = evolution.pheno["age"]->evaluate(&evolution.dna, &evolution.env);
         rotAge = deathAge * 1.05;
 
         if(type == 1) {
@@ -85,19 +85,19 @@ class Fish : public PriDrawable {
                 int x = 0;
                 while(x < img.getSize().x) {
                     if(img.getPixel(x, y).b > 200) {
-                        img.setPixel(x, y, sf::Color(evolution.pheno[PHENO_COLOR1]->evaluate(&evolution.dna, &evolution.env), 
-                            evolution.pheno[PHENO_COLOR2]->evaluate(&evolution.dna, 
-                            &evolution.env), evolution.pheno[PHENO_COLOR3]->evaluate(&evolution.dna, &evolution.env), 255));
+                        img.setPixel(x, y, sf::Color(evolution.pheno["color1"]->evaluate(&evolution.dna, &evolution.env), 
+                            evolution.pheno["color2"]->evaluate(&evolution.dna, 
+                            &evolution.env), evolution.pheno["color3"]->evaluate(&evolution.dna, &evolution.env), 255));
                     }
                     else if(img.getPixel(x, y).g > 100) {
-                        img.setPixel(x, y, sf::Color(evolution.pheno[PHENO_COLOR4]->evaluate(&evolution.dna, &evolution.env), 
-                            evolution.pheno[PHENO_COLOR5]->evaluate(&evolution.dna, 
-                            &evolution.env), evolution.pheno[PHENO_COLOR6]->evaluate(&evolution.dna, &evolution.env), 255));
+                        img.setPixel(x, y, sf::Color(evolution.pheno["color4"]->evaluate(&evolution.dna, &evolution.env), 
+                            evolution.pheno["color4"]->evaluate(&evolution.dna, 
+                            &evolution.env), evolution.pheno["color4"]->evaluate(&evolution.dna, &evolution.env), 255));
                     }
                     else if(img.getPixel(x, y).b > 50) {
-                        img.setPixel(x, y, sf::Color(evolution.pheno[PHENO_COLOR7]->evaluate(&evolution.dna, &evolution.env), 
-                            evolution.pheno[PHENO_COLOR8]->evaluate(&evolution.dna, 
-                            &evolution.env), evolution.pheno[PHENO_COLOR9]->evaluate(&evolution.dna, &evolution.env), 255));
+                        img.setPixel(x, y, sf::Color(evolution.pheno["color7"]->evaluate(&evolution.dna, &evolution.env), 
+                            evolution.pheno["color8"]->evaluate(&evolution.dna, 
+                            &evolution.env), evolution.pheno["color9"]->evaluate(&evolution.dna, &evolution.env), 255));
                     }
                     x++;
                 }
@@ -107,7 +107,7 @@ class Fish : public PriDrawable {
             textures.push_back(std::move(temp));
             setTexture(*textures[currentTextureIndex]);
             
-            scaleFactor = evolution.pheno[PHENO_SIZE]->evaluate(&evolution.dna, &evolution.env) / textures[currentTextureIndex]->getSize().x;
+            scaleFactor = evolution.pheno["size"]->evaluate(&evolution.dna, &evolution.env) / textures[currentTextureIndex]->getSize().x;
             scale(sf::Vector2f(scaleFactor, scaleFactor));
             setOrigin(0.5 * textures[currentTextureIndex]->getSize().x, 0.5 * textures[currentTextureIndex]->getSize().y);
 
