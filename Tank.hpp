@@ -7,7 +7,7 @@
 #include <vector>
 #include <memory>
 #include <algorithm>
-
+#include <chrono>
 
 #include <thread>
 
@@ -49,7 +49,7 @@ class Tank {
         }
         window->setFramerateLimit(60);
         window->setVerticalSyncEnabled(true);
-        int fish_number = 50;
+        int fish_number = 10;
         while(window->isOpen() == 0); // Bad practice?
         // Window manager may have resized us
         this->width = window->getSize().x;
@@ -63,12 +63,13 @@ class Tank {
             
             drawables.push_back(std::move(new_fish));
         }
-        
         for(int i = 0; i < threadNumber; i++) {
             auto newthread = std::thread(&Tank::animateObjectsThread, this, std::ref(drawables), i, threadNumber, std::ref(threadFinishLine));
             newthread.detach();
         }
+        std::mutex animation_mutex;
         while(window->isOpen()) {
+            while(!threadsFinished())
             sf::Event event;
             drawObjects();
             while(window->pollEvent(event)) {
@@ -77,6 +78,11 @@ class Tank {
                     window->close();
                     return;
                 }
+                if (event.type == sf::Event::Resized) {
+                        // update the view to the new size of the window
+                        sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+                        window->setView(sf::View(visibleArea));
+                    }
             }
 
         }
@@ -133,10 +139,6 @@ class Tank {
 
     void drawObjects(void) {
         window->clear();
-        while(!threadsFinished()) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
-        
         std::vector<std::shared_ptr<PriDrawable> > temp;
         for(int i = 0; i < drawables.size(); i++) {
             std::shared_ptr<PriDrawable> & item = drawables[i];

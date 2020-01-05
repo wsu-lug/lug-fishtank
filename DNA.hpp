@@ -11,6 +11,7 @@
 #include <cstring>
 #include <random>
 #include <functional>
+#include <unordered_map>
 
 class Dna;
 class Environment;

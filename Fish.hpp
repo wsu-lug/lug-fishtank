@@ -47,9 +47,9 @@ class Fish : public PriDrawable {
         breedtimes = 0;
         age = 0;
         std::srand(std::time(0));
-        excellentSpeedLimit = 6;
-        fairSpeedLimit = 5;
-        poorSpeedLimit = 2;
+        excellentSpeedLimit = 3;
+        fairSpeedLimit = 2;
+        poorSpeedLimit = 1;
         naturalAge = 100;
         naturalAcc = true;
         speed = 0;
@@ -71,12 +71,20 @@ class Fish : public PriDrawable {
         std::cout << " ><>" << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         evolution.pheno["age"] = new Phenotype(PhenotypeEvaluators::Scaled(0, FISH_MAX_AGE));
-        for(short i = 1; i < 10; i++) {
-            evolution.pheno["color" + std::to_string(i)] = new Phenotype(PhenotypeEvaluators::Scaled(i, 255));
-        }
-        evolution.pheno["size"] = new Phenotype(PhenotypeEvaluators::ScaledOffset(2, 40, 60));
+        
+        evolution.pheno["color1"] = new Phenotype(PhenotypeEvaluators::ScaledOffset(1, 20, 150));
+        evolution.pheno["color2"] = new Phenotype(PhenotypeEvaluators::ScaledOffset(2, 20, 180));
+        evolution.pheno["color3"] = new Phenotype(PhenotypeEvaluators::ScaledOffset(3, 10, 240));
+        evolution.pheno["color4"] = new Phenotype(PhenotypeEvaluators::ScaledOffset(4, 30, 200));
+        evolution.pheno["color5"] = new Phenotype(PhenotypeEvaluators::ScaledOffset(5, 20, 23));
+        evolution.pheno["color6"] = new Phenotype(PhenotypeEvaluators::ScaledOffset(6, 2, 19));
+        evolution.pheno["color7"] = new Phenotype(PhenotypeEvaluators::ScaledOffset(7, 2, 60));
+        evolution.pheno["color8"] = new Phenotype(PhenotypeEvaluators::ScaledOffset(8, 20, 40));
+        evolution.pheno["color9"] = new Phenotype(PhenotypeEvaluators::ScaledOffset(9, 120, 100));
+        
+        evolution.pheno["size"] = new Phenotype(PhenotypeEvaluators::ScaledOffset(2, 70, 60));
         deathAge = evolution.pheno["age"]->evaluate(&evolution.dna, &evolution.env);
-        rotAge = deathAge * 1.05;
+        rotAge = deathAge * 1.2;
 
         if(type == 1) {
             sf::Image img;
@@ -91,8 +99,8 @@ class Fish : public PriDrawable {
                     }
                     else if(img.getPixel(x, y).g > 100) {
                         img.setPixel(x, y, sf::Color(evolution.pheno["color4"]->evaluate(&evolution.dna, &evolution.env), 
-                            evolution.pheno["color4"]->evaluate(&evolution.dna, 
-                            &evolution.env), evolution.pheno["color4"]->evaluate(&evolution.dna, &evolution.env), 255));
+                            evolution.pheno["color5"]->evaluate(&evolution.dna, 
+                            &evolution.env), evolution.pheno["color6"]->evaluate(&evolution.dna, &evolution.env), 255));
                     }
                     else if(img.getPixel(x, y).b > 50) {
                         img.setPixel(x, y, sf::Color(evolution.pheno["color7"]->evaluate(&evolution.dna, &evolution.env), 
@@ -106,7 +114,7 @@ class Fish : public PriDrawable {
             temp->loadFromImage(img);
             textures.push_back(std::move(temp));
             setTexture(*textures[currentTextureIndex]);
-            
+            // evaluate size and convert it to a scale factor so we can apply it to a texture
             scaleFactor = evolution.pheno["size"]->evaluate(&evolution.dna, &evolution.env) / textures[currentTextureIndex]->getSize().x;
             scale(sf::Vector2f(scaleFactor, scaleFactor));
             setOrigin(0.5 * textures[currentTextureIndex]->getSize().x, 0.5 * textures[currentTextureIndex]->getSize().y);
@@ -136,17 +144,16 @@ class Fish : public PriDrawable {
         }
     }
     void swim(void) {
-        std::uniform_int_distribution<int> dist(1, 100);
-        std::random_device rd;
-        std::mt19937 e2(rd());
-        int action = dist(e2);
         if(state == Swimming) {
             swimTick();
         }
     }
 
     void animate() {
-        ticks = (ticks + 1) % 60;
+        ticks += 1;
+        if(ticks == 60) {
+            ticks = 0;
+        }
         updateHealth();
         if(health == Dead) {
             beDead();

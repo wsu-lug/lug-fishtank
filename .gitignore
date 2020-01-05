@@ -1,2 +1,4 @@
 .vscode/
 bin/
+prof_output
+gmon.out

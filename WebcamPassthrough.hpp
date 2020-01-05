@@ -42,6 +42,7 @@ class WebcamPassthrough : public PriDrawable {
             
             cap >> capture;
             cv::cvtColor(capture,capture2,cv::COLOR_BGR2RGBA); 
+
             image.create(capture2.cols, capture2.rows, capture2.ptr());
             vidframe->loadFromImage(image);
             textures.push_back(vidframe);
@@ -52,9 +53,8 @@ class WebcamPassthrough : public PriDrawable {
         while(1) {
             //for(int i = 0; i < 4; i++) {
             cap >> capture;
-            //}
-               
-            cv::cvtColor(capture,capture2,cv::COLOR_BGR2RGBA); 
+            cv::medianBlur(capture, capture2, 11);
+            cv::cvtColor(capture2,capture2,cv::COLOR_BGR2RGBA); 
             //image.create(capture2.cols, capture2.rows, capture2.ptr());
             
             image.create(capture2.cols, capture2.rows, capture2.ptr());

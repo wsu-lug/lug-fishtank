@@ -6,13 +6,13 @@ OUTPUT_PATH=./bin/$(OUTPUT)
 
 all: 
 	@echo "** Building the fishtank **"
-	g++ -g -std=c++14 *.cpp -o $(OUTPUT_PATH) $(LIBS)
+	g++ -O2 -g -std=c++14 *.cpp -o $(OUTPUT_PATH) $(LIBS)
 
 go: 
-	g++ -g -std=c++14 *.cpp -o $(OUTPUT_PATH) $(LIBS) && $(OUTPUT_PATH)
+	g++ -O2 -g -std=c++14 *.cpp -o $(OUTPUT_PATH) $(LIBS) && $(OUTPUT_PATH)
 release:
 	@echo "** Building the fishtank for release **"
-	g++ -std=c++14 *.cpp -o $(OUTPUT_PATH) $(LIBS)
+	g++ -O2 -std=c++14 *.cpp -o $(OUTPUT_PATH) $(LIBS)
 
 install:
 	@echo "** Installing the fishtank **"
